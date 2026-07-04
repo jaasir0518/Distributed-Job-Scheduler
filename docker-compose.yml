@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: scheduler_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: distributed_scheduler
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.Dockerfile
+    container_name: scheduler_backend
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/distributed_scheduler?schema=public
+      JWT_SECRET: superSecretJwtKeyForAuthentication
+      JWT_EXPIRATION: 1d
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    container_name: scheduler_worker
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/distributed_scheduler?schema=public
+      WORKER_NAME: main-worker-instance
+      WORKER_CONCURRENCY: 10
+    depends_on:
+      postgres:
+        condition: service_healthy
+      backend:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    container_name: scheduler_frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+    ports:
+      - "3001:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
