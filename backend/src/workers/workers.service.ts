@@ -29,7 +29,7 @@ export class WorkersService {
     }
 
     const currentLoad = dto.currentLoad ?? worker.currentLoad;
-    let status = WorkerStatus.IDLE;
+    let status: WorkerStatus = WorkerStatus.IDLE;
     if (currentLoad > 0) {
       status = WorkerStatus.BUSY;
     }

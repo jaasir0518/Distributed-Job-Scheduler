@@ -178,6 +178,8 @@ export class JobsService {
       where: { executionId },
       orderBy: { timestamp: 'asc' },
     });
+  }
+
   async findDeadLetterJobs(userId: string, projectId: string) {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
