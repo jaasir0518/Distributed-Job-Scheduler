@@ -112,7 +112,7 @@ export class TaskExecutor {
       if (scheduled) {
         let nextRunAt = new Date();
         if (scheduled.cronExpression) {
-          const cronExpr = parser.parseExpression(scheduled.cronExpression);
+          const cronExpr = parser.parse(scheduled.cronExpression);
           nextRunAt = cronExpr.next().toDate();
         } else if (scheduled.intervalMs) {
           nextRunAt = new Date(Date.now() + scheduled.intervalMs);

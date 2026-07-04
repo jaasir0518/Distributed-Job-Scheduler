@@ -1,65 +1,96 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { PlayCircle, ShieldAlert, Cpu, Layers } from 'lucide-react';
 
 export default function Home() {
+  const router = useRouter();
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      setHasToken(!!token);
+    }
+  }, []);
+
+  const handleLaunch = () => {
+    if (hasToken) {
+      router.push('/dashboard');
+    } else {
+      router.push('/login');
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-950 font-sans min-h-screen relative overflow-hidden">
+      {/* Decorative gradient glowing orb */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" />
+      
+      <main className="relative flex flex-col items-center justify-center max-w-4xl text-center px-6 py-20 space-y-12">
+        {/* Branding header */}
+        <div className="space-y-4">
+          <div className="mx-auto h-12 w-12 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white shadow-xl shadow-indigo-600/30 text-xl">
+            D
+          </div>
+          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+            Distributed <span className="text-indigo-400">Job Scheduler</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="max-w-2xl mx-auto text-sm sm:text-base text-zinc-400 font-medium leading-relaxed">
+            A state-of-the-art telemetry-driven background job scheduler. Scale your execution workflows, configure concurrency limits, monitor live worker nodes, and recover dead letter quarantined tasks.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Action Button */}
+        <div>
+          <button
+            onClick={handleLaunch}
+            className="group relative inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white hover:bg-indigo-500 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-indigo-600/20 active:scale-95"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Launch Developer Console
+            <PlayCircle className="h-4.5 w-4.5 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        </div>
+
+        {/* Feature Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl border-t border-zinc-900/60 pt-12 text-left">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-white font-semibold text-sm">
+              <Cpu className="h-4 w-4 text-indigo-400" />
+              <span>Telemetry Monitoring</span>
+            </div>
+            <p className="text-xs text-zinc-500 leading-normal">
+              Inspect worker CPU/Memory usage metrics over time using live diagnostic visualizers.
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-white font-semibold text-sm">
+              <Layers className="h-4 w-4 text-indigo-400" />
+              <span>Workload Throttling</span>
+            </div>
+            <p className="text-xs text-zinc-500 leading-normal">
+              Change queue parameters and concurrency limits dynamically without deployment rebuilds.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-white font-semibold text-sm">
+              <ShieldAlert className="h-4 w-4 text-indigo-400" />
+              <span>Fault Failover</span>
+            </div>
+            <p className="text-xs text-zinc-500 leading-normal">
+              Sweep dead workers, recover interrupted attempts automatically, and debug with standard trace logs.
+            </p>
+          </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="absolute bottom-6 text-[10px] text-zinc-600 font-mono tracking-wider">
+        CORE SCHEDULING PLATFORM v1.0.0
+      </footer>
     </div>
   );
 }
