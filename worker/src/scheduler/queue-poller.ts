@@ -129,14 +129,21 @@ export class QueuePoller {
               throw new Error('Worker concurrency limit reached');
             }
 
-            // Mark job as RUNNING
-            const updatedJob = await tx.job.update({
-              where: { id: job.id },
+            // Mark job as RUNNING atomically using updateMany to ensure no other worker changed it in the meantime
+            const updateResult = await tx.job.updateMany({
+              where: {
+                id: job.id,
+                status: { in: [JobStatus.PENDING, JobStatus.RETRYING] },
+              },
               data: {
                 status: JobStatus.RUNNING,
                 workerId: this.workerId,
               },
             });
+
+            if (updateResult.count === 0) {
+              throw new Error('Job already acquired by another worker');
+            }
 
             // Update worker load
             await tx.worker.update({
@@ -147,7 +154,12 @@ export class QueuePoller {
               },
             });
 
-            return updatedJob;
+            // Return job object with updated values
+            return {
+              ...job,
+              status: JobStatus.RUNNING,
+              workerId: this.workerId,
+            };
           });
 
           console.log(`Acquired job: ${acquiredJob.name} (${acquiredJob.id})`);

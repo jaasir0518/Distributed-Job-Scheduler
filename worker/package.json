@@ -6,7 +6,12 @@
   "scripts": {
     "start": "ts-node src/main.ts",
     "start:dev": "ts-node-dev --respawn src/main.ts",
-    "generate": "prisma generate --schema=../backend/prisma/schema.prisma"
+    "dev": "npm run start:dev",
+    "build": "tsc",
+    "generate": "prisma generate --schema=../backend/prisma/schema.prisma",
+    "test:e2e": "ts-node src/test-e2e.ts",
+    "test:load-balancing": "ts-node src/test-load-balancing.ts",
+    "check-db": "ts-node src/check-db.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

@@ -24,6 +24,11 @@ export class JobsController {
     return this.jobsService.findAllForQueue(userId, queueId, page, limit);
   }
 
+  @Get('dlq')
+  findDeadLetterJobs(@GetUser('id') userId: string, @Query('projectId') projectId: string) {
+    return this.jobsService.findDeadLetterJobs(userId, projectId);
+  }
+
   @Get(':id')
   findOne(@GetUser('id') userId: string, @Param('id') jobId: string) {
     return this.jobsService.findOne(userId, jobId);
@@ -42,11 +47,6 @@ export class JobsController {
   @Get('executions/:executionId/logs')
   findLogs(@GetUser('id') userId: string, @Param('executionId') executionId: string) {
     return this.jobsService.findLogs(userId, executionId);
-  }
-
-  @Get('dlq')
-  findDeadLetterJobs(@GetUser('id') userId: string, @Query('projectId') projectId: string) {
-    return this.jobsService.findDeadLetterJobs(userId, projectId);
   }
 
   @Post('dlq/:id/retry')
